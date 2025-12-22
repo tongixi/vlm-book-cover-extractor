@@ -10,7 +10,7 @@ import openai  # 新增：OpenAI SDK
 import traceback # 确保已导入 traceback
 
 # --- 配置区域 ---
-OPENAI_API_KEY = 'sk-2368088ca7ff4256bf082eb55d3df622' # 直接设置 API Key
+OPENAI_API_KEY = '' # 直接设置 API Key
 # OPENAI_API_KEY = os.getenv('OPENAI_API_KEY') # 推荐：通过环境变量设置 API Key
 MODLE_TYPE = 'qwen3-vl-flash'
 '''
@@ -318,4 +318,5 @@ def main():
     print(f"\n处理完成。总计处理 {processed_count} 张图片，成功 {success_count} 张。")
 
 if __name__ == "__main__":
+
     main()
