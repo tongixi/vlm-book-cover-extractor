@@ -8,7 +8,7 @@
 
 ## ✨ 项目简介
 
-本项目利用视觉语言模型（Vision Language Model）自动识别并提取图书封面中的关键信息，包括书名、作者、出版社等元数据。通过兼容 OpenAI API 规范的接口调用，实现高效批量处理。
+本项目利用视觉语言模型（Vision Language Model）自动识别并提取图书封面中的关键信息，包括书名、作者、出版社等元数据。基于 Qwen-VL 系列模型，通过兼容 OpenAI API 规范的接口调用，实现高效批量处理。
 
 ## 🗂️ 项目结构
 
@@ -39,9 +39,15 @@ vlm-book-cover-extractor/
 
 3. **配置 API Key**
    
-   在运行前，请先申请相关 VLM 服务的 API Key，并在配置文件或环境变量中设置：
+   本项目使用 Qwen 系列视觉语言模型。请前往 [阿里云百炼控制台](https://bailian.console.aliyun.com/) 申请 API Key：
+   
+   - 登录阿里云账号
+   - 进入「大模型服务平台百炼」控制台
+   - 在 API-KEY 管理中创建密钥
+   
+   获取后在环境变量中配置：
    ```bash
-   export VLM_API_KEY="your-api-key-here"
+   export DASHSCOPE_API_KEY="your-api-key-here"
    ```
 
 ### 运行程序
@@ -89,14 +95,14 @@ python main.py
 欢迎提交 Issue 和 Pull Request！
 
 1. Fork 本项目
-2. 创建特性分支
-3. 提交更改
-4. 推送到分支
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
 5. 提交 Pull Request
 
 ## 📄 许可证
 
-[MIT License](LICENSE)
+[Apache License 2.0](LICENSE)
 
 ## 📮 联系方式
 
