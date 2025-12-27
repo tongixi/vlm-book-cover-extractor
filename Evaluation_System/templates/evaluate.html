@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>评估 - 书籍封面描述评估系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 20px;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .progress-info {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        
+        .btn-link:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .panel {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .panel-body {
+            padding: 20px;
+        }
+        
+        /* 图片面板 */
+        .image-container {
+            text-align: center;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .image-info {
+            margin-top: 15px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* 描述面板 */
+        .description-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .description-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .description-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .description-label {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .description-value {
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* 评估表单 */
+        .evaluation-form {
+            margin-top: 20px;
+        }
+        
+        .eval-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .eval-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .eval-section h3 .badge {
+            background: #667eea;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .radio-option {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .radio-option input {
+            display: none;
+        }
+        
+        .radio-option label {
+            display: block;
+            padding: 15px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .radio-option input:checked + label {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+        
+        .radio-option label:hover {
+            border-color: #667eea;
+        }
+        
+        .radio-option .option-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 18px;
+        }
+        
+        .radio-option .option-desc {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        /* SC评分样式 */
+        .sc-option label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .sc-score {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        /* SC维度检查 */
+        .sc-dimensions {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+        
+        .sc-dimensions h4 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .dimension-checks {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .dimension-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .dimension-check input {
+            width: 18px;
+            height: 18px;
+            accent-color: #667eea;
+        }
+        
+        .dimension-check label {
+            font-size: 14px;
+            color: #555;
+        }
+        
+        /* 备注 */
+        .comments-section textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        
+        .comments-section textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        /* 提交按钮 */
+        .submit-section {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        /* 完成提示 */
+        .completed-message {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .completed-message .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        .completed-message h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .completed-message p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        /* 提示消息 */
+        .toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            padding: 15px 25px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+            }
+            
+            .dimension-checks {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📚 书籍封面描述评估系统</h1>
+        <div class="header-right">
+            <div class="progress-info">
+                进度: {{ progress.evaluated }} / {{ progress.total }} 
+                (剩余 {{ progress.remaining }})
+            </div>
+            <div class="user-info">
+                <span>👤 {{ evaluator_name }}</span>
+                <a href="/statistics" class="btn-link">📊 统计</a>
+                <a href="/logout" class="btn-link">退出</a>
+            </div>
+        </div>
+    </div>
+    
+    {% if sample %}
+    <div class="main-container">
+        <!-- 左侧：图片显示 -->
+        <div class="panel">
+            <div class="panel-header">🖼️ 书籍封面图片</div>
+            <div class="panel-body">
+                <div class="image-container">
+                    <img src="/api/image/{{ sample.image_path }}" alt="书籍封面">
+                    <div class="image-info">
+                        <strong>{{ sample.image_name }}</strong> | 
+                        分类: {{ sample.category }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右侧：描述和评估 -->
+        <div class="panel">
+            <div class="panel-header">📝 AI生成的描述</div>
+            <div class="panel-body">
+                <div class="description-content">
+                    {% for key, value in sample.description_data.items() %}
+                    {% if key not in ['human_evaluations'] and value and value != 'null' %}
+                    <div class="description-item">
+                        <div class="description-label">{{ key }}</div>
+                        <div class="description-value">{{ value }}</div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <form class="evaluation-form" id="evaluationForm">
+                    <input type="hidden" name="sample_id" value="{{ sample.id }}">
+                    <input type="hidden" name="json_path" value="{{ sample.json_path }}">
+                    
+                    <!-- 事实准确性评估 -->
+                    <div class="eval-section">
+                        <h3>
+                            事实准确性 (FC)
+                            <span class="badge">二元判定</span>
+                        </h3>
+                        <p style="color: #666; font-size: 13px; margin-bottom: 15px;">
+                            评估描述是否存在"幻觉"，即描述中是否包含封面中不存在的物体、颜色或文字错误
+                        </p>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="fc" id="fc_s" value="S" required>
+                                <label for="fc_s">
+                                    <div class="option-title">✅ 满意 (S)</div>
+                                    <div class="option-desc">无任何事实性错误</div>
+                                </label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="fc" id="fc_u" value="U" required>
+                                <label for="fc_u">
+                                    <div class="option-title">❌ 不满意 (U)</div>
+                                    <div class="option-desc">存在与图像不符的描述</div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 语义完整性评估 -->
+                    <div class="eval-section">
+                        <h3>
+                            语义完整性 (SC)
+                            <span class="badge">3分制</span>
+                        </h3>
+                        <p style="color: #666; font-size: 13px; margin-bottom: 15px;">
+                            评估描述是否充分捕捉封面的关键视觉要素
+                        </p>
+                        
+                        <div class="sc-dimensions">
+                            <h4>📋 语义核查清单（请勾选描述中涵盖的维度）:</h4>
+                            <div class="dimension-checks">
+                                <div class="dimension-check">
+                                    <input type="checkbox" id="dim_color" name="sc_dim_color">
+                                    <label for="dim_color">① 色彩基调（冷暖色、主色调）</label>
+                                </div>
+                                <div class="dimension-check">
+                                    <input type="checkbox" id="dim_layout" name="sc_dim_layout">
+                                    <label for="dim_layout">② 构图布局（居中、留白、图文位置）</label>
+                                </div>
+                                <div class="dimension-check">
+                                    <input type="checkbox" id="dim_elements" name="sc_dim_elements">
+                                    <label for="dim_elements">③ 图像元素（人物、物体、背景纹理）</label>
+                                </div>
+                                <div class="dimension-check">
+                                    <input type="checkbox" id="dim_style" name="sc_dim_style">
+                                    <label for="dim_style">④ 风格氛围（复古、极简、恐怖等）</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="radio-group" style="margin-top: 15px;">
+                            <div class="radio-option sc-option">
+                                <input type="radio" name="sc" id="sc_3" value="3" required>
+                                <label for="sc_3">
+                                    <div class="sc-score">3</div>
+                                    <div class="option-title">优秀</div>
+                                    <div class="option-desc">涵盖全部4个维度，描述详尽</div>
+                                </label>
+                            </div>
+                            <div class="radio-option sc-option">
+                                <input type="radio" name="sc" id="sc_2" value="2" required>
+                                <label for="sc_2">
+                                    <div class="sc-score">2</div>
+                                    <div class="option-title">良好</div>
+                                    <div class="option-desc">涵盖全维度但描述较笼统</div>
+                                </label>
+                            </div>
+                            <div class="radio-option sc-option">
+                                <input type="radio" name="sc" id="sc_1" value="1" required>
+                                <label for="sc_1">
+                                    <div class="sc-score">1</div>
+                                    <div class="option-title">较差</div>
+                                    <div class="option-desc">仅提及1个维度或相关性低</div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 备注 -->
+                    <div class="eval-section comments-section">
+                        <h3>💬 备注（可选）</h3>
+                        <textarea name="comments" placeholder="如有其他意见或发现的具体问题，请在此说明..."></textarea>
+                    </div>
+                    
+                    <div class="submit-section">
+                        <button type="button" class="btn btn-secondary" onclick="skipSample()">跳过</button>
+                        <button type="submit" class="btn btn-primary">提交评估并继续</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- 评估完成提示 -->
+    <div class="main-container" style="display: flex; justify-content: center;">
+        <div class="panel" style="max-width: 600px;">
+            <div class="panel-body">
+                <div class="completed-message">
+                    <div class="icon">🎉</div>
+                    <h2>评估完成！</h2>
+                    <p>您已完成所有样本的评估，感谢您的参与！</p>
+                    <a href="/statistics" class="btn btn-primary" style="display: inline-block; text-decoration: none;">
+                        查看统计结果
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="toast" id="toast"></div>
+    
+    <script>
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = isError ? '#e74c3c' : '#4CAF50';
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+        
+        function skipSample() {
+            window.location.reload();
+        }
+        
+        {% if sample %}
+        document.getElementById('evaluationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            // 收集SC维度检查
+            const scDetails = {
+                color: document.getElementById('dim_color').checked,
+                layout: document.getElementById('dim_layout').checked,
+                elements: document.getElementById('dim_elements').checked,
+                style: document.getElementById('dim_style').checked
+            };
+            
+            const data = {
+                sample_id: formData.get('sample_id'),
+                json_path: formData.get('json_path'),
+                fc: formData.get('fc'),
+                sc: formData.get('sc'),
+                sc_details: scDetails,
+                comments: formData.get('comments')
+            };
+            
+            // 验证
+            if (!data.fc || !data.sc) {
+                showToast('请完成所有评估项', true);
+                return;
+            }
+            
+            fetch('/submit_evaluation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    showToast('评估已保存！');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    showToast(result.message, true);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('提交失败，请重试', true);
+            });
+        });
+        {% endif %}
+    </script>
+</body>
+</html>

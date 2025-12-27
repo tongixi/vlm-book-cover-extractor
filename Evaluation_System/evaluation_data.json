@@ -1,0 +1,41 @@
+{
+  "evaluations": {
+    "normal/NORMAL_567": [
+      {
+        "evaluator": "1",
+        "timestamp": "2025-12-28T01:19:39.717774",
+        "fc": "S",
+        "sc": 3,
+        "sc_details": {
+          "color": true,
+          "layout": true,
+          "elements": false,
+          "style": true
+        },
+        "comments": ""
+      }
+    ],
+    "normal/NORMAL_322": [
+      {
+        "evaluator": "1",
+        "timestamp": "2025-12-28T01:21:28.050132",
+        "fc": "S",
+        "sc": 3,
+        "sc_details": {
+          "color": false,
+          "layout": false,
+          "elements": false,
+          "style": false
+        },
+        "comments": ""
+      }
+    ]
+  },
+  "evaluators": {
+    "1": {
+      "first_login": "2025-12-28T01:18:43.131190",
+      "evaluation_count": 2,
+      "last_login": "2025-12-28T01:18:43.131190"
+    }
+  }
+}

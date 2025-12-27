@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>书籍封面描述评估系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .login-form {
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .info-box h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .info-box li {
+            padding: 8px 0;
+            color: #555;
+            font-size: 14px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .info-box li:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 书籍封面描述评估系统</h1>
+        <p class="subtitle">AI生成描述质量人工评估平台</p>
+        
+        <form class="login-form" id="loginForm">
+            <div class="form-group">
+                <label for="evaluator_name">评估员姓名</label>
+                <input type="text" id="evaluator_name" name="evaluator_name" 
+                       placeholder="请输入您的姓名" required>
+            </div>
+            <button type="submit">开始评估</button>
+            <p class="error-message" id="errorMsg"></p>
+        </form>
+        
+        <div class="info-box">
+            <h3>📋 评估指标说明</h3>
+            <ul>
+                <li>
+                    <span class="metric-label">事实准确性 (FC)</span><br>
+                    评估描述是否存在"幻觉"，即不存在的物体、颜色或文字错误<br>
+                    <small>满意(S) / 不满意(U) 二元判定</small>
+                </li>
+                <li>
+                    <span class="metric-label">语义完整性 (SC)</span><br>
+                    评估描述是否充分捕捉封面的关键视觉要素<br>
+                    <small>3分制：3分(优秀) / 2分(良好) / 1分(较差)</small>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            fetch('/login', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.redirect;
+                } else {
+                    document.getElementById('errorMsg').textContent = data.message;
+                    document.getElementById('errorMsg').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('errorMsg').textContent = '网络错误，请重试';
+                document.getElementById('errorMsg').style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
