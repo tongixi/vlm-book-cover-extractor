@@ -18,6 +18,7 @@ vlm-book-cover-extractor/
 ├── config/                    # 配置文件夹
 │   └── prompts/               # 请求提示词
 ├── book_covers/               # 封面图片 & 处理记录
+├── Evaluation_System/         # 评估系统
 ├── processing_errors.log      # 错误日志
 └── README.md
 ```
@@ -82,7 +83,7 @@ python main.py
 
 ## 🌐 人工评分系统
 
-基于 Web 的人工评分系统正在整理代码及文档，敬请期待。
+基于 Web 的人工评分系统正在整理代码及文档，在Evaluation_System目录下，目录下有完整的运行文档（2025/12/18更新）。
 
 ## 📝 配置说明
 
