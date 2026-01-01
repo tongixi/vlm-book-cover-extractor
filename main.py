@@ -2,17 +2,18 @@ import os
 import json
 import re
 import logging
-import base64  # 新增：用于图片Base64编码
+import base64
 from pathlib import Path
-# from dashscope import MultiModalConversation # 删除或注释掉旧的导入
-# import dashscope # 删除或注释掉旧的导入
-import openai  # 新增：OpenAI SDK
-import traceback # 确保已导入 traceback
+import openai
+import traceback 
 
 # --- 配置区域 ---
-OPENAI_API_KEY = '' # 直接设置 API Key
+# 兼容 openai 库写法
+OPENAI_API_KEY = 'sk-xxx' # 直接设置 API Key
 # OPENAI_API_KEY = os.getenv('OPENAI_API_KEY') # 推荐：通过环境变量设置 API Key
 MODLE_TYPE = 'qwen3-vl-flash'
+# MODLE_TYPE = 'qwen3-vl-plus'
+
 '''
         qwen3 - vl - plus：性能最强的模型。
         qwen3 - vl - flash：速度更快，成本更低，是兼顾性能与成本的高性价比选择，适用于对响应速度敏感的场景。
@@ -20,17 +21,17 @@ MODLE_TYPE = 'qwen3-vl-flash'
         qwen - vl - plus：速度更快，在效果与成本之间实现良好平衡。
 '''
 if not OPENAI_API_KEY:
-    raise ValueError("请设置环境变量 OPENAI_API_KEY")
+    raise ValueError("请设置环境变量 OPENAI_API_KEY 使用的平台KEY")
 
-OPENAI_BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1" # 默认 OpenAI 地址，可改为其他兼容平台地址
-# OPENAI_BASE_URL = "https://your-proxy-or-local-server/v1/" # 示例：使用代理或本地部署
+OPENAI_BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1" # 默认 Qwen 地址，可改为其他兼容平台地址
+# OPENAI_BASE_URL = "https://127.0.0.1:8888/compatible-mode/v1" # 本地部署使用
 
 IMAGE_FOLDER_PATH = './book_covers/normal'
 SUPPORTED_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.bmp', '.webp', '.gif'} # 确保支持的格式符合模型要求
 OUTPUT_FORMAT = 'json'  # 'json' 或 'txt'
 
 # 重试配置
-MAX_RETRIES = 1  # 最多重试1次（总共尝试2次）
+MAX_RETRIES = 4  # 最多重试4次
 
 # 日志和提示词文件配置
 LOG_FILE_NAME = "processing_errors.log"
@@ -75,7 +76,7 @@ def is_image_file(file_path):
 
 # --- 新增：将图片文件转为 Base64 Data URL ---
 def encode_image_to_base64(image_path):
-    """将图片文件编码为 base64 字符串，用于 OpenAI API"""
+    """将图片文件编码为 base64 字符串，用于 OpenAI API 库兼容 """
     try:
         with open(image_path, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
@@ -153,7 +154,7 @@ def call_openai_api(base64_image_data_url):
         )
         return response
     except Exception as e:
-        error_details = f"OpenAI API 调用抛出异常: {type(e).__name__}: {e}"
+        error_details = f"Qwen API 调用抛出异常: {type(e).__name__}: {e}"
         tb_str = traceback.format_exc()
         detailed_error = f"{error_details}\n堆栈跟踪:\n{tb_str}"
         print(f"    [ERROR] {error_details}")
@@ -165,7 +166,7 @@ def call_openai_api(base64_image_data_url):
 
 def analyze_book_cover(image_path):
     """
-    调用 OpenAI 视觉模型分析单张书籍封面图片，带重试机制。
+    调用 QwenVL 视觉模型分析单张书籍封面图片，带重试机制。
     """
     try:
         # --- 关键步骤：将图片编码为 Base64 Data URL ---
@@ -191,7 +192,7 @@ def analyze_book_cover(image_path):
                       # 返回原始异常信息
                       return {"success": False, "error": response.get('original_exception', 'Unknown Error during API call'), "raw_output": response.get('error', 'No detailed error')}
 
-            # 检查是否是成功的 OpenAI 响应对象
+            # 检查是否是成功的 Qwen 响应对象
             if hasattr(response, 'choices') and len(response.choices) > 0:
                 # 成功获取响应
                 model_reply_content = response.choices[0].message.content # 获取模型的文本回复
@@ -240,8 +241,7 @@ def analyze_book_cover(image_path):
     log_error(image_path, final_error)
     return {"success": False, "error": final_error, "raw_output": "N/A"}
 
-# --- save_result 和 main 函数保持不变 ---
-# ... (这部分代码不需要修改，除了可能的日志消息前缀可以改一下) ...
+# ... (这部分代码不建议需要修改，除了可能的日志消息前缀可以改一下) ...
 
 def save_result(image_path, result):
     """将分析结果保存到文件。"""
@@ -318,5 +318,4 @@ def main():
     print(f"\n处理完成。总计处理 {processed_count} 张图片，成功 {success_count} 张。")
 
 if __name__ == "__main__":
-
     main()
